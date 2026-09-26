@@ -1,0 +1,39 @@
+// =================================================================
+// HEAVY-DUTY INDUSTRIAL SPANNER WRENCH BIT GENERATOR
+// For 5/8"-11 Security Fasteners (Nominal Layout)
+// =================================================================
+
+$fn = 100;
+
+// Dimensions matching the 5/8" bolt configuration
+bit_outer_dia    = 26.0;  // Outside diameter of driver tool
+bit_body_height  = 30.0;  // Length of tool handle/socket attachment area
+drive_socket_dia = 12.7;  // 1/2-inch square socket cutout for impact wrenches
+
+pin_diameter     = 4.45;  // Slightly undersized (0.05mm gap) for smooth entry
+pin_distance     = 18.25; // Matching center-to-center distance
+pin_length       = 7.0;   // Length the tool pins protrude out
+
+generate_spanner_wrench();
+
+module generate_spanner_wrench() {
+    difference() {
+        union() {
+            // Main heavy-walled wrench socket body
+            cylinder(d=bit_outer_dia, h=bit_body_height);
+            
+            // Driver Pin 1
+            translate([pin_distance / 2, 0, bit_body_height])
+                cylinder(d=pin_diameter, h=pin_length);
+                
+            // Driver Pin 2
+            translate([-pin_distance / 2, 0, bit_body_height])
+                cylinder(d=pin_diameter, h=pin_length);
+        }
+        
+        // Subtract a standard 1/2" square socket drive slot at the base 
+        // This allows crews to use standard ratchets or impact drivers
+        translate([-drive_socket_dia/2, -drive_socket_dia/2, -0.1])
+            cube([drive_socket_dia, drive_socket_dia, 15]);
+    }
+}
