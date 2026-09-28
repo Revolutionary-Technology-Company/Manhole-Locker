@@ -1,0 +1,22 @@
+name: Catch2 Manhole-Locker CI
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: self-hosted-rtx5070ti
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Compile CUDA Actuator
+        run: |
+          nvcc -O3 -use_fast_math src/manhole_actuator.cpp -o build/lock_test
+          
+      - name: Run Catch2 Suite
+        run: ./build/lock_test --success
+        
+      - name: Validate Univac Telemetry Serialization
+        run: ./build/lock_test "[serialization_protocol]"
